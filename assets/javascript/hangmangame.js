@@ -106,9 +106,11 @@
 
 		};
 
+		//handler for reset
+		$("#reset").on("click", reset);
 	
 
-		var reset = function()
+		function reset()
 		{	
 			wIdx = 0;
 			currentWord = wordOptions[wIdx];
@@ -116,11 +118,16 @@
 			losses = 0;
 			wrongGuesses = 6;
 			userWord = "";
+			userInput = [];			
+			cwHtml ="";
 			for(i=0; i<currentWord.length; i++ )
 			{
 				userWord += "-";
 				userInput[i] = "<div class='match'>" + userWord[i] + "</div>";
+				cwHtml += userInput[i];
 			}	
+
+			updateDisplay();	
 		};
 
 		var resetWord = function()

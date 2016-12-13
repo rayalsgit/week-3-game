@@ -2,7 +2,8 @@
 	$(document).ready( function(){
 
 
-		var wordOptions = ["KEVIN", "JOHN", "DUANE", "TERRA", "RENZO", "DWIGHT", "ANITA", "STEVE"]; 
+		var wordOptions = ["KEVIN", "JOHN", "DUANE", "TERRA", "RENZO", "DWIGHT", "ANITA", "STEVE"];
+		var validInput = new RegExp(/^[a-z]+$/i);
 		var wIdx = 0;
 		var currentWord = wordOptions[wIdx];
 
@@ -32,6 +33,14 @@
 			
 			$("#keySound")[0].currentTime = 0;
     		$("#keySound")[0].play();
+
+    		if(!validInput.test(event.key))
+    		{
+    			$("#loseSound")[0].currentTime = 0;
+				$("#loseSound")[0].play();
+				return;
+    		}
+
 			var k = event.key.toUpperCase();
 
 			var indices = [];
@@ -62,7 +71,7 @@
 					$("#winSound")[0].currentTime = 0;
 					$("#winSound")[0].play();					
 					//wIdx++;
-					wIdx = Math.floor(Math.random()*wordOptions.length);
+					wIdx = Math.floor(Math.random()*10);
 					if(wIdx<wordOptions.length)
 						resetWord();
 					else
@@ -79,7 +88,7 @@
 				{
 					losses++;
 					//wIdx++;
-					wIdx = Math.floor(Math.random()*wordOptions.length);
+					wIdx = Math.floor(Math.random()*10);
 					if(wIdx<wordOptions.length)
 					{	
 						resetWord(); 

@@ -38,6 +38,10 @@ body {
     padding: 0;
 }
 
+.grayText{
+    color: gray;
+}
+
 .funText {
     color: gray;
     font-size: 70px;

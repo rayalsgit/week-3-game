@@ -1,0 +1,56 @@
+* {
+    box-sizing: border-box;
+}
+
+.jumbotron {
+    background-color: transparent;
+}
+
+.match {
+    margin: 2px;
+    min-width: 86px;
+    height: 100px;
+    padding: 2px;
+    font-size: 80px;
+    font-weight: bold;
+    color: blue;
+    border: 2px solid green;
+    display: inline-block;
+    text-align: center;
+}
+
+body {
+    background-image: url("../images/simple_dashed.png");
+    background-repeat: repeat;
+    background-position: center;
+    color: white;
+}
+
+.main_divs {
+    min-height: 700px;
+    color: yellow;
+    font-size: 50px;
+}
+
+.userWord {
+    margin: 20px auto;
+    /*  border: 2px solid green;  */
+    padding: 0;
+}
+
+.funText {
+    color: gray;
+    font-size: 70px;
+}
+
+.g {
+    color: yellow;
+}
+
+.w {
+    color: green;
+}
+
+.l {
+    color: red;
+}

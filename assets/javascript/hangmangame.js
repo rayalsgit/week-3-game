@@ -1,32 +1,99 @@
 //use strict;
 	$(document).ready( function(){
 
-
 		var wordOptions = ["KEVIN", "JOHN", "DUANE", "TERRA", "RENZO", "DWIGHT", "ANITA", "STEVE"];
-		var validInput = new RegExp(/^[a-z]+$/i);
-		var wIdx = 0;
-		var currentWord = wordOptions[wIdx];
+		// object to store the game.
+		var game = {
+	         
+			 validInput : new RegExp(/^[a-z]+$/i),
+			 wIdx : 0,
+			 currentWord : wordOptions[this.wIdx],
 
-		var wrongGuesses = 6;
-		var wins = 0;
-		var losses = 0;
+			 wrongGuesses : 6,
+			 wins : 0,
+			 losses : 0,
 
-		var userInput = [];
-		var userWord = "";
+			 userInput : [],
+			 userWord : "",
 
-		var cwHtml = "";
+			 cwHtml : "",
 
-		for(i=0; i<currentWord.length; i++ )
+	      	// func to update UI 
+	      	updateDisplay : function()
+			{
+				$("#win").text( " Wins: " +  this.wins);
+				$("#loss").text( " Losses: " +  this.losses);
+				$("#guess").text( " Guesses: " +  this.wrongGuesses);
+				$(".userWord").html(this.cwHtml);
+			},
+
+			// reset game
+	        reset: function()
+			{	
+				this.wIdx = 0;
+				this.currentWord = wordOptions[this.wIdx];
+				this.wins = 0;
+				this.losses = 0;
+				this.wrongGuesses = 6;
+				this.userWord = "";
+				this.userInput = [];			
+				this.cwHtml ="";
+				for(i=0; i<this.currentWord.length; i++ )
+				{
+					this.userWord += "-";
+					this.userInput[i] = "<div class='match'>" + this.userWord[i] + "</div>";
+					this.cwHtml += this.userInput[i];
+				}	
+
+				this.updateDisplay();	
+			},
+
+			// ready to the next word
+			resetWord : function()
+			{
+				this.wrongGuesses = 6;
+				this.currentWord = wordOptions[this.wIdx];
+				this.userInput = [];
+				this.userWord = "";
+				this.cwHtml = "";
+				for(i=0; i< this.currentWord.length; i++ )
+				{
+					this.userWord += "-";
+					this.userInput[i] = "<div class='match'>" + this.userWord[i] + "</div>";
+					this.cwHtml += this.userInput[i];
+				}	
+			},
+
+			// update current word from user input
+			updateCurrentWord : function()
+			{
+				this.cwHtml = "";
+				for(i=0; i<this.userInput.length; i++ )
+				{
+					this.cwHtml += this.userInput[i];
+				}
+			},
+			
+			// string util
+			setCharAt : function(str,index,chr) {
+			    if(index > str.length-1) return str;
+			    return str.substr(0,index) + chr + str.substr(index+1);
+			}
+
+	    };
+
+		// initialize the game object
+		game.currentWord = wordOptions[0];
+		for(i=0; i<game.currentWord.length; i++ )
 		{
-			userWord += "-";
-			userInput[i] = "<div class='match'>" + userWord[i] + "</div>";
-			cwHtml += userInput[i];
+			game.userWord += "-";
+			game.userInput[i] = "<div class='match'>" + game.userWord[i] + "</div>";
+			game.cwHtml += game.userInput[i];
 		}	
+		// show initial empty word.
+		$(".userWord").html(game.cwHtml);
 
-		$(".userWord").html(cwHtml);
-
-
-		//reset();
+		
 
 		//handler for key up
 		document.onkeyup = function(event) {
@@ -34,7 +101,7 @@
 			$("#keySound")[0].currentTime = 0;
     		$("#keySound")[0].play();
 
-    		if(!validInput.test(event.key))
+    		if(!game.validInput.test(event.key))
     		{
     			$("#loseSound")[0].currentTime = 0;
 				$("#loseSound")[0].play();
@@ -44,8 +111,8 @@
 			var k = event.key.toUpperCase();
 
 			var indices = [];
-			for(var i=0; i<currentWord.length;i++) {
-			    if (currentWord[i] === k.toUpperCase()) indices.push(i);
+			for(var i=0; i<game.currentWord.length;i++) {
+			    if (game.currentWord[i] === k.toUpperCase()) indices.push(i);
 			}
 
 			//var lIdx = currentWord.indexOf(k.toUpperCase());
@@ -56,50 +123,59 @@
 				for(var i=0; i<indices.length; i++ )
 				{
 					var lIdx = indices[i];
-					userInput[lIdx] = "<div class='match'>" + k + "</div>";
-					userWord = setCharAt(userWord,lIdx, k) ;			
+					game.userInput[lIdx] = "<div class='match'>" + k + "</div>";
+					game.userWord = game.setCharAt(game.userWord,lIdx, k) ;			
 					
 				}
 
 
-				updateCurrentWord();								
+				game.updateCurrentWord();												
 
 				//if last letter of word
-				if(currentWord == userWord)
-				{
-					wins++;
+				if(game.currentWord == game.userWord)
+				{					
+					game.wins++;					
+
 					$("#winSound")[0].currentTime = 0;
-					$("#winSound")[0].play();					
-					//wIdx++;
-					wIdx = Math.floor(Math.random()*10);
-					if(wIdx<wordOptions.length)
-						resetWord();
-					else
-						reset();
+					$("#winSound")[0].play();
+
+					setTimeout(function(){
+						game.wIdx = Math.floor(Math.random()*10);
+						if(game.wIdx < wordOptions.length)
+							game.resetWord();
+						else
+							game.reset();
+
+						// finally update the UI
+						game.updateDisplay();
+					}, 2000);
+					
 				}
 
-				updateDisplay();
+				// finally update the UI
+				game.updateDisplay();				
 				
 			}
 			else
 			{
-				wrongGuesses --;
-				if(wrongGuesses === 0)
+				// wrong guess
+				game.wrongGuesses --;
+				if(game.wrongGuesses === 0)
 				{
-					losses++;
-					//wIdx++;
-					wIdx = Math.floor(Math.random()*10);
-					if(wIdx<wordOptions.length)
+					game.losses++;
+					
+					game.wIdx = Math.floor(Math.random()*10);
+					if(game.wIdx < wordOptions.length)
 					{	
-						resetWord(); 
+						game.resetWord(); 
 					}
 					else
 					{	
-						reset(); 
+						game.reset(); 
 					}
 				}
 
-				updateDisplay();
+				game.updateDisplay();
 				$("#loseSound")[0].currentTime = 0;
 				$("#loseSound")[0].play();
 			}
@@ -107,64 +183,7 @@
 		};
 
 		//handler for reset
-		$("#reset").on("click", reset);
+		$("#reset").on("click", function(){game.reset();});
 	
-
-		function reset()
-		{	
-			wIdx = 0;
-			currentWord = wordOptions[wIdx];
-			wins = 0;
-			losses = 0;
-			wrongGuesses = 6;
-			userWord = "";
-			userInput = [];			
-			cwHtml ="";
-			for(i=0; i<currentWord.length; i++ )
-			{
-				userWord += "-";
-				userInput[i] = "<div class='match'>" + userWord[i] + "</div>";
-				cwHtml += userInput[i];
-			}	
-
-			updateDisplay();	
-		};
-
-		var resetWord = function()
-		{
-			wrongGuesses = 6;
-			currentWord = wordOptions[wIdx];
-			userInput = [];
-			userWord = "";
-			cwHtml = "";
-			for(i=0; i<currentWord.length; i++ )
-			{
-				userWord += "-";
-				userInput[i] = "<div class='match'>" + userWord[i] + "</div>";
-				cwHtml += userInput[i];
-			}	
-		};
-
-		var updateCurrentWord = function()
-		{
-			cwHtml = "";
-			for(i=0; i<userInput.length; i++ )
-			{
-				cwHtml += userInput[i];
-			}
-		};
-
-		var updateDisplay = function()
-		{
-			$("#win").text( " Wins: " +  wins);
-			$("#loss").text( " Losses: " +  losses);
-			$("#guess").text( " Guesses: " +  wrongGuesses);
-			$(".userWord").html(cwHtml);
-		};
-
-		var  setCharAt = function(str,index,chr) {
-		    if(index > str.length-1) return str;
-		    return str.substr(0,index) + chr + str.substr(index+1);
-		};
 
 	});
